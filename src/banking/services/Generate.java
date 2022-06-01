@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Generate {
 
-    private final int NUM_TO_GENERATE = 10;
+    private final int NUM_TO_GENERATE = 9;
     private final int PIN_NUM = 4;
 
     private final Random random = new Random();
@@ -16,7 +16,7 @@ public class Generate {
             int generate = random.nextInt(10);
             builder.append(generate);
         }
-
+        builder.append(accountIdentifier(builder.toString()));
         return builder.toString();
     }
 
@@ -28,6 +28,19 @@ public class Generate {
         }
 
         return builder.toString();
+    }
+
+    private int accountIdentifier(String cardNum) {
+        int sum = 0;
+        for (int i = 0; i < cardNum.length(); i++) {
+            int parseInt = Integer.parseInt(String.valueOf(cardNum.charAt(i)));
+            if (i % 2 == 0) {
+                sum += parseInt * 2 > 9 ? (parseInt * 2) - 9 : parseInt * 2;
+                continue;
+            }
+            sum += parseInt;
+        }
+        return sum % 10 == 0 ? 0 : 10 - (sum % 10);
     }
 
 }
