@@ -3,6 +3,8 @@ package banking;
 import banking.entity.Account;
 import banking.services.Methods;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 import static banking.constants.Text.*;
@@ -11,14 +13,15 @@ public class Program {
 
     private final Scanner scanner;
     private final Methods methods;
+    private final Connection connection;
 
-
-    public Program() {
+    public Program(Connection connection, String tableName) {
         this.scanner = new Scanner(System.in);
-        this.methods = new Methods();
+        this.methods = new Methods(connection, tableName);
+        this.connection = connection;
     }
 
-    public void start() {
+    public void start() throws SQLException {
         while (true) {
             System.out.println(MENU);
             String op = scanner.nextLine();
@@ -34,6 +37,7 @@ public class Program {
                     }
                     break;
                 case "0":
+                    connection.close();
                     System.out.println(BYE);
                     System.exit(0);
                 default:

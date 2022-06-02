@@ -2,20 +2,26 @@ package banking.entity;
 
 public class Account {
 
-    private Card card;
-    private double amount;
+    private static int id;
+    private final int accountId;
+    private final Card card;
+    private int amount;
 
-    public Account(Card card, double amount) {
+    public Account(Card card, int amount) {
         this.card = card;
         this.amount = amount;
+        this.accountId = ++id;
     }
 
     public Card getCard() {
         return card;
     }
 
-    public double getAmount() {
+    public int getAmount() {
         return amount;
     }
 
+    public int getAccountId() {
+        return accountId;
+    }
 }
