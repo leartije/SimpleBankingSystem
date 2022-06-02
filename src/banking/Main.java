@@ -7,10 +7,11 @@ import java.sql.SQLException;
 
 public class Main {
 
-    private static final String TABLE_NAME = "card";
+    public static final String TABLE_NAME = "card";
     private static final String UNKNOWN = "unknown";
     private static final String NO_DB_NAME = "Can't retrieve database name";
     private static final String FILE_NAME = "-fileName";
+    public static Connection CONNECTION;
 
     public static void main(String[] args) throws SQLException {
 
@@ -19,10 +20,8 @@ public class Main {
             System.out.println(NO_DB_NAME);
             return;
         }
-        Connection connection = SQLite.connection(dbName);
-        SQLite.createTable(connection, TABLE_NAME);
-        new Program(connection, TABLE_NAME).start();
-
+        CONNECTION = SQLite.createConnection(dbName);
+        new Program().start();
     }
 
     public static String getDbName(String[] args) {

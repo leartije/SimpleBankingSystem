@@ -7,8 +7,6 @@ public class Card {
     private final String cardNum;
     private final String pin;
 
-
-
     public Card(String cardNum, String pin) {
         this.cardNum = cardNum;
         this.pin = pin;

@@ -26,7 +26,6 @@ public class Generate {
             int generate = random.nextInt(10);
             builder.append(generate);
         }
-
         return builder.toString();
     }
 

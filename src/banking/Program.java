@@ -1,9 +1,9 @@
 package banking;
 
 import banking.entity.Account;
-import banking.services.Methods;
+import banking.repository.SQLite;
+import banking.services.AccountService;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -12,58 +12,67 @@ import static banking.constants.Text.*;
 public class Program {
 
     private final Scanner scanner;
-    private final Methods methods;
-    private final Connection connection;
+    private final AccountService accountService;
 
-    public Program(Connection connection, String tableName) {
+    public Program() {
         this.scanner = new Scanner(System.in);
-        this.methods = new Methods(connection, tableName);
-        this.connection = connection;
+        this.accountService = new AccountService(Main.CONNECTION);
     }
 
     public void start() throws SQLException {
+        SQLite.createTable();
         while (true) {
             System.out.println(MENU);
             String op = scanner.nextLine();
             switch (op) {
                 case "1":
-                    methods.generateCard();
+                    accountService.generateCard();
                     break;
                 case "2":
-                    Account login = methods.login();
+                    Account login = accountService.login();
                     if (login != null) {
                         System.out.println(SUCCESSFULLY_LOGGED_IN);
                         loginMenu(login);
                     }
                     break;
                 case "0":
-                    connection.close();
+                    Main.CONNECTION.close();
                     System.out.println(BYE);
                     System.exit(0);
                 default:
-                    System.out.println("Try 1, 2 or 0");
+                    System.out.println(DEFAULT_MSG_MAIN);
                     break;
             }
         }
 
     }
 
-    private void loginMenu(Account login) {
+    private void loginMenu(Account currentAccount) {
         while (true) {
             System.out.println(LOG_IN_MENU);
             String op = scanner.nextLine();
             switch (op) {
                 case "1":
-                    System.out.println("Balance: " + login.getAmount());
+                    accountService.getBalance(currentAccount.getBalance());
                     break;
                 case "2":
+                    accountService.addIncome(currentAccount);
+                    break;
+                case "3":
+                    accountService.transfer(currentAccount);
+                    break;
+                case "4":
+                    accountService.closeAccount(currentAccount);
+                    return;
+                case "5":
                     System.out.println(SUCCESSFULLY_LOGGED_OUT);
                     return;
                 case "0":
                     System.out.println(BYE);
                     System.exit(0);
                 default:
-                    System.out.println("Try 1, 2 or 0");
+                    System.out.println(DEFAULT_MSG);
+                    break;
             }
         }
     }
