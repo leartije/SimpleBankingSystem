@@ -4,8 +4,7 @@ import banking.entity.Account;
 import banking.entity.Card;
 import banking.repository.SQLite;
 
-import java.sql.Connection;
-import java.util.InputMismatchException;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 import static banking.constants.Text.*;
@@ -13,18 +12,23 @@ import static banking.constants.Text.*;
 public class AccountService {
     private final Scanner scanner = new Scanner(System.in);
     private final Generate generate;
-    private final Connection connection;
+    private final SQLite sqLite;
 
-    public AccountService(Connection connection) {
+    public AccountService() throws SQLException {
         this.generate = new Generate();
-        this.connection = connection;
+
+        this.sqLite = new SQLite();
+    }
+
+    public SQLite getSqLite() {
+        return sqLite;
     }
 
     public void generateCard() {
         String cardNum = generate.generateCardNum();
         String pin = generate.generatePinNum();
         Account account = new Account(new Card(cardNum, pin), 0);
-        SQLite.saveAccount(
+        sqLite.saveAccount(
                 account.getAccountId(),
                 account.getCard().getCardNum(),
                 account.getCard().getPin(),
@@ -37,7 +41,7 @@ public class AccountService {
         String cardNum = scanner.nextLine();
         System.out.println(ENTER_YOUR_PIN);
         String pin = scanner.nextLine();
-        Account search = SQLite.loadAccount(cardNum, pin);
+        Account search = sqLite.loadAccount(cardNum, pin);
         if (search != null) {
             return search;
         }
@@ -50,51 +54,51 @@ public class AccountService {
     }
 
     public void addIncome(Account account) {
-        int income;
-        try {
-            System.out.println(ENTER_INCOME);
-            income = Integer.parseInt(scanner.nextLine());
+        System.out.println(ENTER_INCOME);
+        int income = checkAmount(scanner.nextLine());
+        if (income != -1) {
             account.setBalance(income);
-            SQLite.addIncome(account.getBalance(), account.getCard().getCardNum());
+            sqLite.addIncome(account.getBalance(), account.getCard().getCardNum());
             System.out.println(INCOME_ADDED);
-        } catch (NumberFormatException e) {
-            System.out.println("Not valid input");
         }
     }
 
     public void transfer(Account account) {
-        System.out.println("Transfer");
-        System.out.println("Enter card number:");
+        System.out.println(TRANSFER);
+        System.out.println(ENTER_CARD_NUMBER);
         String cardNum = scanner.nextLine();
+        if (cardNum.equals(account.getCard().getCardNum())) {
+            System.out.println(SAME_ACC_ERROR);
+            return;
+        }
         if (!isLuhn(cardNum)) {
-            System.out.println("Probably you made a mistake in the card number. Please try again!");
+            System.out.println(NO_LUHN_NUM_ERROR);
             return;
         }
-        Account focusAccount = SQLite.isExists(cardNum);
+        Account focusAccount = sqLite.isExists(cardNum);
         if (focusAccount == null) {
-            System.out.println("Such a card does not exist.");
+            System.out.println(CARD_DONT_EXIST_ERROR);
             return;
         }
-        System.out.println("Enter how much money you want to transfer:");
-        String amount = scanner.nextLine();
-        int tem = checkAmount(amount);
-        if (tem != -1 && account.getBalance() >= tem) {
-            focusAccount.setBalance(tem);
-            SQLite.addIncome(focusAccount.getBalance(), cardNum);
-            account.transferAmount(tem);
-            SQLite.addIncome(account.getBalance(), account.getCard().getCardNum());
-            System.out.println("Success!");
+        System.out.println(ENTER_AMOUNT);
+        int amount = checkAmount(scanner.nextLine());
+        if (amount != -1 && account.getBalance() >= amount) {
+            focusAccount.setBalance(amount);
+            sqLite.addIncome(focusAccount.getBalance(), cardNum);
+            account.transferAmount(amount);
+            sqLite.addIncome(account.getBalance(), account.getCard().getCardNum());
+            System.out.println(SUCCESS);
             return;
         }
-        System.out.println("Not enough money!");
-
-
-
+        if (amount == -1) {
+            return;
+        }
+        System.out.println(NOT_ENOUGH_MONEY_ERROR);
     }
 
     public void closeAccount(Account account) {
-        SQLite.deleteAccount(account.getCard().getCardNum());
-        System.out.println("The account has been closed!");
+        sqLite.deleteAccount(account.getCard().getCardNum());
+        System.out.println(CLOSE_ACCOUNT);
     }
 
     public boolean isLuhn(String cardNum) {
@@ -111,14 +115,16 @@ public class AccountService {
     }
 
     private int checkAmount(String amount) {
-        int amountInt = 0;
         try {
-            amountInt = Integer.parseInt(amount);
-        } catch (InputMismatchException e) {
+            int parse = Integer.parseInt(amount);
+            if (parse >= 0) {
+                return parse;
+            }
+            throw new NumberFormatException();
+        } catch (NumberFormatException e) {
             System.out.println(amount + " is not valid num");
             return -1;
         }
-        return amountInt;
     }
 
 

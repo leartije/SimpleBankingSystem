@@ -1,7 +1,5 @@
 package banking;
 
-import banking.repository.SQLite;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -12,15 +10,15 @@ public class Main {
     private static final String NO_DB_NAME = "Can't retrieve database name";
     private static final String FILE_NAME = "-fileName";
     public static Connection CONNECTION;
+    public static String dbName;
 
     public static void main(String[] args) throws SQLException {
 
-        String dbName = getDbName(args);
+        dbName = getDbName(args);
         if (dbName.equals(UNKNOWN)) {
             System.out.println(NO_DB_NAME);
             return;
         }
-        CONNECTION = SQLite.createConnection(dbName);
         new Program().start();
     }
 

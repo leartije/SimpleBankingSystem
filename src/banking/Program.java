@@ -1,7 +1,6 @@
 package banking;
 
 import banking.entity.Account;
-import banking.repository.SQLite;
 import banking.services.AccountService;
 
 import java.sql.SQLException;
@@ -14,13 +13,13 @@ public class Program {
     private final Scanner scanner;
     private final AccountService accountService;
 
-    public Program() {
+    public Program() throws SQLException {
         this.scanner = new Scanner(System.in);
-        this.accountService = new AccountService(Main.CONNECTION);
+        this.accountService = new AccountService();
     }
 
     public void start() throws SQLException {
-        SQLite.createTable();
+        accountService.getSqLite().createTable();
         while (true) {
             System.out.println(MENU);
             String op = scanner.nextLine();

@@ -31,4 +31,18 @@ public class Text {
     public static final String ENTER_INCOME = "Enter income:";
     public static final String INCOME_ADDED = "Income was added!";
 
+    //transfer
+    public static final String TRANSFER = "Transfer";
+    public static final String ENTER_CARD_NUMBER = "Enter card number:";
+    public static final String SAME_ACC_ERROR = "You can't transfer money to the same account!";
+    public static final String NO_LUHN_NUM_ERROR = "Probably you made a mistake in the card number. Please try again!";
+    public static final String CARD_DONT_EXIST_ERROR = "Such a card does not exist.";
+    public static final String NOT_ENOUGH_MONEY_ERROR = "Not enough money!";
+    public static final String ENTER_AMOUNT = "Enter how much money you want to transfer:";
+    public static final String SUCCESS = "Success!";
+
+    //close acc
+    public static final String CLOSE_ACCOUNT = "The account has been closed!";
+
+
 }
