@@ -43,7 +43,6 @@ public class Program {
                     break;
             }
         }
-
     }
 
     private void loginMenu(Account currentAccount) {

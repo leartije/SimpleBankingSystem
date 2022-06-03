@@ -9,12 +9,12 @@ import java.sql.*;
 import static banking.Main.*;
 import static banking.constants.Queries.*;
 
-public class SQLite {
+public class SQLiteDatabase {
 
     private final Connection CONNECTION;
 
-    public SQLite() throws SQLException {
-        this.CONNECTION = createConnection(dbName);
+    public SQLiteDatabase() throws SQLException {
+        this.CONNECTION = createConnection(DB_NAME);
     }
 
     public Connection createConnection(String dbName) throws SQLException {
@@ -47,16 +47,15 @@ public class SQLite {
         }
     }
 
-    public Account loadAccount(String num, String pinA) {
+    public Account loadAccount(String num, String pin) {
         try (Statement statement = CONNECTION.createStatement()) {
-            try (ResultSet result = statement.executeQuery(String.format(SELECT_ALL, TABLE_NAME, num, pinA))) {
-                int aId = result.getInt("id");
-                String cardNum = result.getString("number");
-                String pin = result.getString("pin");
-                int balance = result.getInt("balance");
+            try (ResultSet result = statement.executeQuery(String.format(SELECT_ALL, TABLE_NAME, num, pin))) {
+                String cardNum = result.getString(NUMBER);
+                String cardPin = result.getString(PIN);
+                int cardBalance = result.getInt(BALANCE);
 
-                Card card = new Card(cardNum, pin);
-                return new Account(card, balance);
+                Card card = new Card(cardNum, cardPin);
+                return new Account(card, cardBalance);
             }
 
         } catch (SQLException e) {
@@ -64,7 +63,7 @@ public class SQLite {
         }
     }
 
-    public void addIncome(int amount, String cardNum) {
+    public void changeAccountBalance(int amount, String cardNum) {
         try (Statement statement = CONNECTION.createStatement()) {
             statement.executeUpdate(String.format(ADD_INCOME, TABLE_NAME, amount, cardNum));
         } catch (SQLException e) {
@@ -81,13 +80,12 @@ public class SQLite {
         }
     }
 
-    public Account isExists(String cardNum) {
-        try(Statement statement = CONNECTION.createStatement()) {
-            try(ResultSet set = statement.executeQuery(String.format(IS_EXISTS, TABLE_NAME, cardNum))) {
-                int id = set.getInt("id");
-                String number = set.getString("number");
-                String pin = set.getString("pin");
-                int balance = set.getInt("balance");
+    public Account ifExists(String cardNum) {
+        try (Statement statement = CONNECTION.createStatement()) {
+            try (ResultSet set = statement.executeQuery(String.format(IF_EXISTS, TABLE_NAME, cardNum))) {
+                String number = set.getString(NUMBER);
+                String pin = set.getString(PIN);
+                int balance = set.getInt(BALANCE);
                 Card card = new Card(number, pin);
                 return new Account(card, balance);
             }

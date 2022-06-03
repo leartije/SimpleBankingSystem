@@ -23,7 +23,7 @@ public class Account {
         return balance;
     }
 
-    public void setBalance(int balance) {
+    public void addToBalance(int balance) {
         this.balance += balance;
     }
 

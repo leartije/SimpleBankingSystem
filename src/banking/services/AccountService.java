@@ -2,7 +2,7 @@ package banking.services;
 
 import banking.entity.Account;
 import banking.entity.Card;
-import banking.repository.SQLite;
+import banking.repository.SQLiteDatabase;
 
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -12,23 +12,22 @@ import static banking.constants.Text.*;
 public class AccountService {
     private final Scanner scanner = new Scanner(System.in);
     private final Generate generate;
-    private final SQLite sqLite;
+    private final SQLiteDatabase sqLiteDatabase;
 
     public AccountService() throws SQLException {
         this.generate = new Generate();
-
-        this.sqLite = new SQLite();
+        this.sqLiteDatabase = new SQLiteDatabase();
     }
 
-    public SQLite getSqLite() {
-        return sqLite;
+    public SQLiteDatabase getSqLite() {
+        return sqLiteDatabase;
     }
 
     public void generateCard() {
         String cardNum = generate.generateCardNum();
         String pin = generate.generatePinNum();
         Account account = new Account(new Card(cardNum, pin), 0);
-        sqLite.saveAccount(
+        sqLiteDatabase.saveAccount(
                 account.getAccountId(),
                 account.getCard().getCardNum(),
                 account.getCard().getPin(),
@@ -41,7 +40,7 @@ public class AccountService {
         String cardNum = scanner.nextLine();
         System.out.println(ENTER_YOUR_PIN);
         String pin = scanner.nextLine();
-        Account search = sqLite.loadAccount(cardNum, pin);
+        Account search = sqLiteDatabase.loadAccount(cardNum, pin);
         if (search != null) {
             return search;
         }
@@ -57,8 +56,8 @@ public class AccountService {
         System.out.println(ENTER_INCOME);
         int income = checkAmount(scanner.nextLine());
         if (income != -1) {
-            account.setBalance(income);
-            sqLite.addIncome(account.getBalance(), account.getCard().getCardNum());
+            account.addToBalance(income);
+            sqLiteDatabase.changeAccountBalance(account.getBalance(), account.getCard().getCardNum());
             System.out.println(INCOME_ADDED);
         }
     }
@@ -75,7 +74,7 @@ public class AccountService {
             System.out.println(NO_LUHN_NUM_ERROR);
             return;
         }
-        Account focusAccount = sqLite.isExists(cardNum);
+        Account focusAccount = sqLiteDatabase.ifExists(cardNum);
         if (focusAccount == null) {
             System.out.println(CARD_DONT_EXIST_ERROR);
             return;
@@ -83,10 +82,10 @@ public class AccountService {
         System.out.println(ENTER_AMOUNT);
         int amount = checkAmount(scanner.nextLine());
         if (amount != -1 && account.getBalance() >= amount) {
-            focusAccount.setBalance(amount);
-            sqLite.addIncome(focusAccount.getBalance(), cardNum);
+            focusAccount.addToBalance(amount);
+            sqLiteDatabase.changeAccountBalance(focusAccount.getBalance(), cardNum);
             account.transferAmount(amount);
-            sqLite.addIncome(account.getBalance(), account.getCard().getCardNum());
+            sqLiteDatabase.changeAccountBalance(account.getBalance(), account.getCard().getCardNum());
             System.out.println(SUCCESS);
             return;
         }
@@ -97,11 +96,11 @@ public class AccountService {
     }
 
     public void closeAccount(Account account) {
-        sqLite.deleteAccount(account.getCard().getCardNum());
+        sqLiteDatabase.deleteAccount(account.getCard().getCardNum());
         System.out.println(CLOSE_ACCOUNT);
     }
 
-    public boolean isLuhn(String cardNum) {
+    private boolean isLuhn(String cardNum) {
         int sum = 0;
         for (int i = 0; i < cardNum.length(); i++) {
             int parseInt = Integer.parseInt(String.valueOf(cardNum.charAt(i)));

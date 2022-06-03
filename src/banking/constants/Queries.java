@@ -14,6 +14,12 @@ public class Queries {
     public static final String SELECT_ALL = "SELECT * FROM %s WHERE number=%s AND pin=%s";
     public static final String ADD_INCOME = "UPDATE %s SET balance=%d WHERE number=%s";
     public static final String DELETE_ACCOUNT = "DELETE FROM %s WHERE number=%s";
-    public static final String IS_EXISTS = "SELECT * FROM %s WHERE number=%s";
+    public static final String IF_EXISTS = "SELECT * FROM %s WHERE number=%s";
+
+    //fields
+    public static final String ID = "id";
+    public static final String NUMBER = "number";
+    public static final String PIN = "pin";
+    public static final String BALANCE = "balance";
 
 }
