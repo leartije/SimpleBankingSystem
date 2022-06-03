@@ -1,6 +1,5 @@
 package banking;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 
 public class Main {
@@ -9,7 +8,6 @@ public class Main {
     private static final String UNKNOWN = "unknown";
     private static final String NO_DB_NAME = "Can't retrieve database name";
     private static final String FILE_NAME = "-fileName";
-    public static Connection CONNECTION;
     public static String DB_NAME;
 
     public static void main(String[] args) throws SQLException {

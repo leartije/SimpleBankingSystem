@@ -35,7 +35,7 @@ public class Program {
                     }
                     break;
                 case "0":
-                    Main.CONNECTION.close();
+                    accountService.getSqLite().closeConnection();
                     System.out.println(BYE);
                     System.exit(0);
                 default:

@@ -24,6 +24,14 @@ public class SQLiteDatabase {
         return source.getConnection();
     }
 
+    public void closeConnection() {
+        try {
+            CONNECTION.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void createTable() {
         try (Statement statement = CONNECTION.createStatement()) {
             statement.executeUpdate(String.format(CREATE_TABLE, TABLE_NAME));

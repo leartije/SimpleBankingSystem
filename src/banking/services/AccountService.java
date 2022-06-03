@@ -63,6 +63,9 @@ public class AccountService {
     }
 
     public void transfer(Account account) {
+        if (account == null) {
+            return;
+        }
         System.out.println(TRANSFER);
         System.out.println(ENTER_CARD_NUMBER);
         String cardNum = scanner.nextLine();
@@ -96,11 +99,18 @@ public class AccountService {
     }
 
     public void closeAccount(Account account) {
+        if (account == null) {
+            return;
+        }
         sqLiteDatabase.deleteAccount(account.getCard().getCardNum());
         System.out.println(CLOSE_ACCOUNT);
     }
 
     private boolean isLuhn(String cardNum) {
+        if (cardNum == null || cardNum.length() != 16) {
+            return false;
+        }
+
         int sum = 0;
         for (int i = 0; i < cardNum.length(); i++) {
             int parseInt = Integer.parseInt(String.valueOf(cardNum.charAt(i)));
