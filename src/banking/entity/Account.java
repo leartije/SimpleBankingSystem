@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Account {
 
-    private static int id;
+    public static int id;
     private final int accountId;
     private final Card card;
     private int balance;

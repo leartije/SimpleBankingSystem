@@ -16,6 +16,7 @@ public class Program {
     public Program() throws SQLException {
         this.scanner = new Scanner(System.in);
         this.accountService = new AccountService();
+        accountService.setupIdContinuity();
     }
 
     public void start() throws SQLException {

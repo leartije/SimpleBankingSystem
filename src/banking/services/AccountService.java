@@ -40,9 +40,9 @@ public class AccountService {
         String cardNum = scanner.nextLine();
         System.out.println(ENTER_YOUR_PIN);
         String pin = scanner.nextLine();
-        Account search = sqLiteDatabase.loadAccount(cardNum, pin);
-        if (search != null) {
-            return search;
+        Account searchAccount = sqLiteDatabase.loadAccount(cardNum, pin);
+        if (searchAccount != null) {
+            return searchAccount;
         }
         System.out.println(WRONG_LOGIN_INF);
         return null;
@@ -106,6 +106,13 @@ public class AccountService {
         System.out.println(CLOSE_ACCOUNT);
     }
 
+    public void setupIdContinuity() {
+        int lastId = sqLiteDatabase.getLastId();
+        if (lastId != -1) {
+            Account.id = lastId;
+        }
+    }
+
     private boolean isLuhn(String cardNum) {
         if (cardNum == null || cardNum.length() != 16) {
             return false;
@@ -135,6 +142,4 @@ public class AccountService {
             return -1;
         }
     }
-
-
 }

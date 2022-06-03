@@ -6,7 +6,8 @@ import org.sqlite.SQLiteDataSource;
 
 import java.sql.*;
 
-import static banking.Main.*;
+import static banking.Main.DB_NAME;
+import static banking.Main.TABLE_NAME;
 import static banking.constants.Queries.*;
 
 public class SQLiteDatabase {
@@ -99,6 +100,16 @@ public class SQLiteDatabase {
             }
         } catch (SQLException e) {
             return null;
+        }
+    }
+
+    public int getLastId() {
+        try(Statement statement = CONNECTION.createStatement()) {
+            try(ResultSet set = statement.executeQuery(String.format(LAST_ID, TABLE_NAME, TABLE_NAME))) {
+                return set.getInt(ID);
+            }
+        } catch (SQLException e) {
+            return -1;
         }
     }
 }
